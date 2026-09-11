@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import Inicio from './views/Inicio.jsx'
 import DetalleEmpresa from './views/DetalleEmpresa.jsx'
+import PiePagina from './components/PiePagina.jsx'
 import './App.css'
 
 // En local: http://localhost:8000 (ver .env.example)
@@ -152,6 +153,7 @@ function App() {
           onEditar={editarEmpresa}
           onEliminar={eliminarEmpresa}
         />
+        <PiePagina />
       </main>
     )
   }
@@ -168,6 +170,7 @@ function App() {
         onEditarEmpleado={editarEmpleado}
         onEliminarEmpleado={eliminarEmpleado}
       />
+      <PiePagina />
     </main>
   )
 }
