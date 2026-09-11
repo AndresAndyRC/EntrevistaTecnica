@@ -1,0 +1,16 @@
+/* Pie de página: texto pequeño y en color suave para que no compita con el contenido */
+.pie-pagina {
+  margin-top: var(--espacio-xl);
+  text-align: center;
+  font-size: 0.75rem;
+}
+
+/* Enlace del crédito: mismo tono que el texto, solo se subraya al pasar el mouse */
+.pie-pagina a {
+  color: var(--color-texto-suave);
+  text-decoration: none;
+}
+
+.pie-pagina a:hover {
+  text-decoration: underline;
+}

@@ -1,0 +1,36 @@
+/* Bloque de bienvenida: logo a la izquierda y texto a la derecha */
+.bienvenida {
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-lg);
+}
+
+/* Tamaño fijo del logo para que no deforme el bloque, sea cual sea la imagen */
+.bienvenida-logo {
+  width: 96px;
+  height: 96px;
+  flex-shrink: 0;
+  object-fit: contain;
+}
+
+.bienvenida h1 {
+  margin-bottom: var(--espacio-sm);
+}
+
+/* Texto de apoyo en color suave, debajo del título */
+.bienvenida-descripcion {
+  color: var(--color-texto-suave);
+}
+
+.bienvenida-lista {
+  margin: var(--espacio-sm) 0 0;
+  padding-left: var(--espacio-lg);
+}
+
+/* En pantallas pequeñas el logo queda encima del texto */
+@media (max-width: 640px) {
+  .bienvenida {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

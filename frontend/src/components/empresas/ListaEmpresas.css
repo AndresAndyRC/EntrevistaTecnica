@@ -1,0 +1,16 @@
+/* Columna de código: angosta y en color suave, es un dato de referencia */
+.lista-empresas .columna-codigo {
+  width: 90px;
+  color: var(--color-texto-suave);
+}
+
+/* Nombre de la empresa destacado: es el dato que más se busca */
+.lista-empresas .columna-nombre {
+  font-weight: 600;
+}
+
+/* "Ver más" con el color principal, sin competir con el botón de agregar */
+.lista-empresas .boton-ver-mas {
+  color: var(--color-primario);
+  border-color: var(--color-primario);
+}

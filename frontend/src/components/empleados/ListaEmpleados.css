@@ -1,0 +1,11 @@
+/* Columnas de identificadores (id y código de empresa): angostas y en color suave */
+.lista-empleados .columna-id {
+  width: 90px;
+  color: var(--color-texto-suave);
+}
+
+/* Salario alineado a la derecha y con dígitos del mismo ancho para comparar cifras */
+.lista-empleados .columna-salario {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}

@@ -1,0 +1,6 @@
+/* Contenedor de la página: centra el contenido y limita su ancho */
+.app {
+  max-width: var(--ancho-maximo);
+  margin: 0 auto;
+  padding: var(--espacio-xl) var(--espacio-md);
+}

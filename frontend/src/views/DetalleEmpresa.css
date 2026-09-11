@@ -1,0 +1,17 @@
+/* Vista de detalle: secciones apiladas con el mismo espacio entre ellas */
+.detalle-empresa {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-lg);
+}
+
+/* Botón "Volver": pegado a la izquierda, sin estirarse a todo el ancho */
+.detalle-empresa-volver {
+  align-self: flex-start;
+}
+
+/* Barra con el botón "Agregar empleado", alineado a la derecha */
+.detalle-empresa-barra {
+  display: flex;
+  justify-content: flex-end;
+}
