@@ -1,0 +1,16 @@
+/* Quita el margen que el navegador pone por defecto alrededor de la página */
+body {
+  margin: 0;
+}
+
+/* Une los bordes de las celdas para que se vea una sola línea entre ellas */
+table {
+  border-collapse: collapse;
+}
+
+/* Le pone borde gris y un poco de espacio interno a cada celda de la tabla */
+th,
+td {
+  border: 1px solid #ccc;
+  padding: 4px 8px;
+}
