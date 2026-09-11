@@ -12,6 +12,19 @@ dist
 dist-ssr
 *.local
 
+# Variables de entorno (claves secretas)
+.env
+.env.*
+!.env.example
+
+# Python
+venv/
+__pycache__/
+*.pyc
+
+# Vercel
+.vercel
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
