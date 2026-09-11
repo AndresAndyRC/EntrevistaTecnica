@@ -38,26 +38,22 @@ function Inicio({ empresas, onVerMas, onAgregar, onEditar, onEliminar }) {
     setEmpresaEditando(null)
   }
 
-  // Se ejecuta cuando en el formulario se da clic en "Guardar"; recibe código, NIT y nombre
-  function guardarEmpresa(datos) {
+  // Se ejecuta cuando en el formulario se da clic en "Guardar"; recibe NIT y nombre
+  // Es async porque tiene que esperar la respuesta de la API (App hace el fetch)
+  async function guardarEmpresa(datos) {
+    // Aquí guardamos si la API aceptó los datos (true) o respondió con error (false)
+    let guardado
     // Si hay una empresa en edición, estamos editando
     if (empresaEditando) {
-      // Mandamos los cambios a App, que es quien guarda la lista
-      onEditar(datos)
+      // Juntamos lo que ya tenía (el código) con los datos nuevos (NIT y nombre) y esperamos a App
+      guardado = await onEditar({ ...empresaEditando, ...datos })
     } else {
-      // Si no, estamos agregando: revisamos que no exista otra empresa con el mismo código (some devuelve true si alguna coincide)
-      const codigoRepetido = empresas.some((empresa) => empresa.codigo === datos.codigo)
-      // Si el código ya existe, avisamos y salimos sin guardar (el formulario sigue abierto para corregirlo)
-      if (codigoRepetido) {
-        // Mensaje de aviso para el usuario
-        window.alert('Ya existe una empresa con ese código.')
-        // Salimos de la función aquí
-        return
-      }
-      // Si el código es nuevo, mandamos la empresa a App para que la agregue
-      onAgregar(datos)
+      // Si no, estamos agregando: mandamos NIT y nombre (el código lo genera la base de datos)
+      guardado = await onAgregar(datos)
     }
-    // En los dos casos, cerramos el formulario al terminar
+    // Si hubo error (por ejemplo, NIT repetido), salimos sin cerrar el formulario para que el usuario corrija
+    if (!guardado) return
+    // Si se guardó, cerramos el formulario
     cerrarFormulario()
   }
 

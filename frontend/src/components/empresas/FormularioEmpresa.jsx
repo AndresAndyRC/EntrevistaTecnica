@@ -6,19 +6,17 @@ import { useState } from 'react'
 function FormularioEmpresa({ empresa, onGuardar, onCancelar }) {
   // Si nos llega una empresa estamos editando; si llega null estamos agregando
   const esEdicion = empresa !== null
-  // Valor del campo Código: si editamos empieza con su código, si agregamos empieza vacío
-  const [codigo, setCodigo] = useState(esEdicion ? empresa.codigo : '')
-  // Valor del campo NIT: igual que el código
+  // Valor del campo NIT: si editamos empieza con su NIT, si agregamos empieza vacío
   const [nit, setNit] = useState(esEdicion ? empresa.nit : '')
-  // Valor del campo Nombre: igual que el código
+  // Valor del campo Nombre: igual que el NIT
   const [nombre, setNombre] = useState(esEdicion ? empresa.nombre : '')
 
   // Se ejecuta al enviar el formulario (clic en "Guardar")
   function manejarEnvio(evento) {
     // Evita que el navegador recargue la página, que es lo que hace un formulario por defecto
     evento.preventDefault()
-    // Mandamos los datos escritos en el formulario
-    onGuardar({ codigo: codigo, nit: nit, nombre: nombre })
+    // Mandamos solo NIT y nombre: el código lo genera la base de datos
+    onGuardar({ nit: nit, nombre: nombre })
   }
 
   // Lo que se va a dibujar en pantalla
@@ -27,10 +25,8 @@ function FormularioEmpresa({ empresa, onGuardar, onCancelar }) {
     <form onSubmit={manejarEnvio}>
       {/* El título cambia según si estamos editando o agregando */}
       <h2>{esEdicion ? 'Editar empresa' : 'Agregar empresa'}</h2>
-      {/* Campo Código: al agregar se puede escribir; al editar queda bloqueado (disabled) porque los empleados lo usan para saber a qué empresa pertenecen */}
-      <div>
-        <label>Código: <input value={codigo} onChange={(evento) => setCodigo(evento.target.value)} disabled={esEdicion} required /></label>
-      </div>
+      {/* Al editar mostramos el código solo como texto: lo genera la base de datos y no se puede cambiar */}
+      {esEdicion && <p>Código: {empresa.codigo}</p>}
       {/* Campo NIT: value muestra lo guardado y onChange guarda cada letra que se escribe; required no deja enviarlo vacío */}
       <div>
         <label>NIT: <input value={nit} onChange={(evento) => setNit(evento.target.value)} required /></label>

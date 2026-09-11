@@ -34,7 +34,7 @@ function ListaEmpleados({ empleados, onEditar, onEliminar }) {
             <tr key={empleado.id}>
               {/* Una celda por cada dato del empleado */}
               <td>{empleado.id}</td>
-              <td>{empleado.codigoEmpresa}</td>
+              <td>{empleado.codigo_empresa}</td>
               <td>{empleado.cedula}</td>
               <td>{empleado.nombre}</td>
               <td>{empleado.salario}</td>

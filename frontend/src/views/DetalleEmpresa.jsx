@@ -39,16 +39,21 @@ function DetalleEmpresa({ empresa, empleados, onVolver, onAgregarEmpleado, onEdi
   }
 
   // Se ejecuta cuando en el formulario se da clic en "Guardar"; recibe cédula, nombre y salario
-  function guardarEmpleado(datos) {
+  // Es async porque tiene que esperar la respuesta de la API (App hace el fetch)
+  async function guardarEmpleado(datos) {
+    // Aquí guardamos si la API aceptó los datos (true) o respondió con error (false)
+    let guardado
     // Si hay un empleado en edición, estamos editando
     if (empleadoEditando) {
-      // Juntamos lo que ya tenía (id y codigoEmpresa) con los datos nuevos (cédula, nombre y salario)
-      onEditarEmpleado({ ...empleadoEditando, ...datos })
+      // Juntamos lo que ya tenía (id y codigo_empresa) con los datos nuevos (cédula, nombre y salario)
+      guardado = await onEditarEmpleado({ ...empleadoEditando, ...datos })
     } else {
       // Si no, estamos agregando: le ponemos el código de esta empresa para que quede ligado a ella
-      onAgregarEmpleado({ ...datos, codigoEmpresa: empresa.codigo })
+      guardado = await onAgregarEmpleado({ ...datos, codigo_empresa: empresa.codigo })
     }
-    // En los dos casos, cerramos el formulario al terminar
+    // Si hubo error (por ejemplo, cédula repetida), salimos sin cerrar el formulario para que el usuario corrija
+    if (!guardado) return
+    // Si se guardó, cerramos el formulario
     cerrarFormulario()
   }
 
