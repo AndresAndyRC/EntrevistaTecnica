@@ -1,62 +1,56 @@
-from fastapi import APIRouter, HTTPException # Para crear rutas y responder errores
-from postgrest.exceptions import APIError # Error que lanza Supabase cuando la base de datos rechaza algo
-from database import supabase # Conexion
-from schemas import Empleado, EmpleadoEntrada # Esquemas de datos
+from fastapi import APIRouter, HTTPException
+from postgrest.exceptions import APIError
+from database import supabase
+from schemas import Empleado, EmpleadoEntrada
 
-# Rutas
-router = APIRouter(prefix="/empleados", tags=["Empleados"]) # Crear rutas
+router = APIRouter(prefix="/empleados", tags=["Empleados"])
 
-# GET
-@router.get("", response_model=list[Empleado]) # Obtener todos los empleados
+@router.get("", response_model=list[Empleado])
 def get_empleados():
-    respuesta = supabase.table("empleados").select("*").order("id").execute() # trae todos, ordenados por id
-    return respuesta.data # devuelve la lista
+    respuesta = supabase.table("empleados").select("*").order("id").execute()
+    return respuesta.data
 
-# POST
-@router.post("", response_model=Empleado, status_code=201) # Crear empleado
-def post_empleado(empleado: EmpleadoEntrada): # recibe y valida los datos del cuerpo (JSON)
-    datos = empleado.model_dump() # convierte el molde a diccionario
+@router.post("", response_model=Empleado, status_code=201)
+def post_empleado(empleado: EmpleadoEntrada):
+    datos = empleado.model_dump()
     try:
-        respuesta = supabase.table("empleados").insert(datos).execute() # guarda en Supabase
+        respuesta = supabase.table("empleados").insert(datos).execute()
     except APIError as error:
-        if error.code == "23505": # valor repetido: la cédula ya existe
+        if error.code == "23505":  # violación de unicidad: cédula repetida
             raise HTTPException(status_code=409, detail="Ya existe un empleado con esa cédula")
-        if error.code == "23503": # llave foránea: el codigo_empresa no existe en la tabla empresas
+        if error.code == "23503":  # violación de llave foránea: la empresa no existe
             raise HTTPException(status_code=404, detail="La empresa no existe")
-        if error.code == "23514": # regla check: el salario es negativo
+        if error.code == "23514":  # violación de check: salario negativo
             raise HTTPException(status_code=422, detail="El salario no puede ser negativo")
-        raise # si es otro error, que siga su curso
-    return respuesta.data[0] # devuelve el empleado creado (con el id que puso la base de datos)
+        raise
+    return respuesta.data[0]
 
-# GET para un empleado por id
-@router.get("/{id_empleado}", response_model=Empleado) # Obtener un empleado por id
-def get_empleado(id_empleado: int): # recibe el id desde la URL
-    respuesta = supabase.table("empleados").select("*").eq("id", id_empleado).execute() # busca el empleado por id
-    if not respuesta.data: # si no existe el empleado
-        raise HTTPException(status_code=404, detail="Empleado no encontrado") # devuelve error 404
-    return respuesta.data[0] # devuelve el empleado
+@router.get("/{id_empleado}", response_model=Empleado)
+def get_empleado(id_empleado: int):
+    respuesta = supabase.table("empleados").select("*").eq("id", id_empleado).execute()
+    if not respuesta.data:
+        raise HTTPException(status_code=404, detail="Empleado no encontrado")
+    return respuesta.data[0]
 
-# PUT
-@router.put("/{id_empleado}", response_model=Empleado) # Actualizar un empleado por id
-def put_empleado(id_empleado: int, empleado: EmpleadoEntrada): # recibe el id desde la URL y los datos nuevos desde el cuerpo
-    datos = empleado.model_dump() # convierte el molde a diccionario
+@router.put("/{id_empleado}", response_model=Empleado)
+def put_empleado(id_empleado: int, empleado: EmpleadoEntrada):
+    datos = empleado.model_dump()
     try:
-        respuesta = supabase.table("empleados").update(datos).eq("id", id_empleado).execute() # cambia solo el empleado con ese id
+        respuesta = supabase.table("empleados").update(datos).eq("id", id_empleado).execute()
     except APIError as error:
-        if error.code == "23505": # valor repetido: la cédula ya la tiene otro empleado
+        if error.code == "23505":  # violación de unicidad: cédula repetida
             raise HTTPException(status_code=409, detail="Ya existe un empleado con esa cédula")
-        if error.code == "23503": # llave foránea: el codigo_empresa no existe en la tabla empresas
+        if error.code == "23503":  # violación de llave foránea: la empresa no existe
             raise HTTPException(status_code=404, detail="La empresa no existe")
-        if error.code == "23514": # regla check: el salario es negativo
+        if error.code == "23514":  # violación de check: salario negativo
             raise HTTPException(status_code=422, detail="El salario no puede ser negativo")
-        raise # si es otro error, que siga su curso
-    if not respuesta.data: # si no se actualizó nada, el empleado no existe
-        raise HTTPException(status_code=404, detail="Empleado no encontrado") # devuelve error 404
-    return respuesta.data[0] # devuelve el empleado actualizado
+        raise
+    if not respuesta.data:  # ninguna fila afectada: el empleado no existe
+        raise HTTPException(status_code=404, detail="Empleado no encontrado")
+    return respuesta.data[0]
 
-# DELETE
-@router.delete("/{id_empleado}", status_code=204) # Borrar un empleado por id
-def delete_empleado(id_empleado: int): # recibe el id desde la URL
-    respuesta = supabase.table("empleados").delete().eq("id", id_empleado).execute() # borra solo el empleado con ese id
-    if not respuesta.data: # si no se borró nada, el empleado no existe
-        raise HTTPException(status_code=404, detail="Empleado no encontrado") # devuelve error 404
+@router.delete("/{id_empleado}", status_code=204)
+def delete_empleado(id_empleado: int):
+    respuesta = supabase.table("empleados").delete().eq("id", id_empleado).execute()
+    if not respuesta.data:  # ninguna fila afectada: el empleado no existe
+        raise HTTPException(status_code=404, detail="Empleado no encontrado")

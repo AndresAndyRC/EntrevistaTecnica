@@ -1,65 +1,58 @@
-from fastapi import APIRouter, HTTPException # Para crear rutas
+from fastapi import APIRouter, HTTPException
 from postgrest.exceptions import APIError
-from database import supabase # Conexion
-from schemas import Empresa, EmpresaEntrada, Empleado #Esquema de datos
+from database import supabase
+from schemas import Empresa, EmpresaEntrada, Empleado
 
-# Rutas
+router = APIRouter(prefix="/empresas", tags=["Empresas"])
 
-router = APIRouter(prefix="/empresas", tags=["Empresas"]) # Crear rutas
-
-# GET
-@router.get("", response_model=list[Empresa]) # Obtener todas las empresas
+@router.get("", response_model=list[Empresa])
 def get_empresas():
     respuesta = supabase.table("empresas").select("*").order("codigo").execute()
     return respuesta.data
 
-# POST
-@router.post("", response_model=Empresa, status_code=201) # Crear empresa
-def post_empresa(empresa: EmpresaEntrada):                # recibe y valida los datos
-    datos = empresa.model_dump()                             # molde → diccionario
+@router.post("", response_model=Empresa, status_code=201)
+def post_empresa(empresa: EmpresaEntrada):
+    datos = empresa.model_dump()
     try:
-        respuesta = supabase.table("empresas").insert(datos).execute()   # guarda en Supabase
+        respuesta = supabase.table("empresas").insert(datos).execute()
     except APIError as error:
-        if error.code == "23505":                            # si es error de NIT repetido
+        if error.code == "23505":  # violación de unicidad: NIT repetido
             raise HTTPException(status_code=409, detail="Ya existe una empresa con ese NIT")
-        raise                              # si es otro error, que siga su curso
-    return respuesta.data[0]                                  # devuelve la fila creada
+        raise
+    return respuesta.data[0]
 
+@router.get("/{codigo}", response_model=Empresa)
+def get_empresa(codigo: int):
+    respuesta = supabase.table("empresas").select("*").eq("codigo", codigo).execute()
+    if not respuesta.data:
+        raise HTTPException(status_code=404, detail="Empresa no encontrada")
+    return respuesta.data[0]
 
-# GET para una empresa por codigo
-@router.get("/{codigo}", response_model=Empresa) # Obtener una empresa por codigo
-def get_empresa(codigo: int): # recibe y valida los datos
-    respuesta = supabase.table("empresas").select("*").eq("codigo", codigo).execute() # busca la empresa por codigo
-    if not respuesta.data: # si no existe la empresa
-        raise HTTPException(status_code=404, detail="Empresa no encontrada") # devuelve error 404
-    return respuesta.data[0] # devuelve la empresa
+@router.get("/{codigo}/empleados", response_model=list[Empleado])
+def get_empleados_de_empresa(codigo: int):
+    # Se valida la empresa aparte para distinguir "no existe" (404) de "sin empleados" ([])
+    empresa = supabase.table("empresas").select("codigo").eq("codigo", codigo).execute()
+    if not empresa.data:
+        raise HTTPException(status_code=404, detail="Empresa no encontrada")
+    respuesta = supabase.table("empleados").select("*").eq("codigo_empresa", codigo).order("id").execute()
+    return respuesta.data
 
-# GET para los empleados de una empresa
-@router.get("/{codigo}/empleados", response_model=list[Empleado]) # Obtener los empleados de una empresa
-def get_empleados_de_empresa(codigo: int): # recibe el código de la empresa desde la URL
-    empresa = supabase.table("empresas").select("codigo").eq("codigo", codigo).execute() # revisa que la empresa exista
-    if not empresa.data: # si no existe la empresa
-        raise HTTPException(status_code=404, detail="Empresa no encontrada") # devuelve error 404
-    respuesta = supabase.table("empleados").select("*").eq("codigo_empresa", codigo).order("id").execute() # trae solo los empleados de esa empresa
-    return respuesta.data # devuelve la lista (vacía si la empresa no tiene empleados)
-
-# PUT
-@router.put("/{codigo}", response_model=Empresa) # Actualizar una empresa por codigo
-def put_empresa(codigo: int, empresa: EmpresaEntrada): # recibe y valida los datos
+@router.put("/{codigo}", response_model=Empresa)
+def put_empresa(codigo: int, empresa: EmpresaEntrada):
     datos = empresa.model_dump()
     try:
         respuesta = supabase.table("empresas").update(datos).eq("codigo", codigo).execute()
     except APIError as error:
-        if error.code == "23505":
+        if error.code == "23505":  # violación de unicidad: NIT repetido
             raise HTTPException(status_code=409, detail="Ya existe una empresa con ese NIT")
         raise
-    if not respuesta.data: # si no se actualizó nada, la empresa no existe
-        raise HTTPException(status_code=404, detail="Empresa no encontrada") # devuelve error 404
+    if not respuesta.data:  # ninguna fila afectada: la empresa no existe
+        raise HTTPException(status_code=404, detail="Empresa no encontrada")
     return respuesta.data[0]
 
-#DELETE
-@router.delete("/{codigo}", status_code=204) # Borrar una empresa por codigo
-def delete_empresa(codigo: int): # recibe el código desde la URL
-    respuesta = supabase.table("empresas").delete().eq("codigo", codigo).execute() # borra solo la empresa con ese código
-    if not respuesta.data: # si no se borró nada, la empresa no existe
-        raise HTTPException(status_code=404, detail="Empresa no encontrada") # devuelve error 404
+@router.delete("/{codigo}", status_code=204)
+def delete_empresa(codigo: int):
+    # Sus empleados se borran en la base de datos (on delete cascade)
+    respuesta = supabase.table("empresas").delete().eq("codigo", codigo).execute()
+    if not respuesta.data:  # ninguna fila afectada: la empresa no existe
+        raise HTTPException(status_code=404, detail="Empresa no encontrada")

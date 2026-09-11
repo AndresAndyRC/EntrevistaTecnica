@@ -1,0 +1,12 @@
+/* Vista de inicio: secciones apiladas con el mismo espacio entre ellas */
+.inicio {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-lg);
+}
+
+/* Barra con el botón "Agregar empresa", alineado a la derecha */
+.inicio-barra {
+  display: flex;
+  justify-content: flex-end;
+}

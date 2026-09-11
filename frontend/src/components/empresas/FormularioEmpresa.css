@@ -1,0 +1,17 @@
+/* Formulario de empresa: NIT y nombre en dos columnas */
+.formulario-empresa {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+/* Código de la empresa (solo al editar): ocupa todo el ancho, en color suave */
+.formulario-empresa-codigo {
+  grid-column: 1 / -1;
+  color: var(--color-texto-suave);
+}
+
+/* En pantallas pequeñas los campos quedan uno debajo del otro */
+@media (max-width: 640px) {
+  .formulario-empresa {
+    grid-template-columns: 1fr;
+  }
+}

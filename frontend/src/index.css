@@ -1,16 +1,208 @@
-/* Quita el margen que el navegador pone por defecto alrededor de la página */
+/*
+  Estilos globales de la aplicación.
+  Aquí van las variables y los estilos que comparten varios componentes
+  (tarjetas, botones, formularios y tablas). Lo propio de cada componente
+  está en su archivo .css, junto a su .jsx.
+*/
+
+/* Variables globales: colores, espacios y medidas de toda la app */
+:root {
+  --color-primario: #2563eb;
+  --color-primario-hover: #1d4ed8;
+  --color-peligro: #dc2626;
+  --color-fondo: #f4f6f9;
+  --color-superficie: #ffffff;
+  --color-borde: #e2e8f0;
+  --color-texto: #1e293b;
+  --color-texto-suave: #64748b;
+  --color-resaltado: #f1f5f9;
+
+  --fuente: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+
+  --espacio-xs: 4px;
+  --espacio-sm: 8px;
+  --espacio-md: 16px;
+  --espacio-lg: 24px;
+  --espacio-xl: 32px;
+
+  --radio: 8px;
+  --sombra: 0 1px 3px rgba(15, 23, 42, 0.08);
+  --ancho-maximo: 1000px;
+}
+
+/* Base: medidas predecibles, fuente y fondo de la página */
+* {
+  box-sizing: border-box;
+}
+
 body {
+  margin: 0;
+  font-family: var(--fuente);
+  line-height: 1.5;
+  color: var(--color-texto);
+  background-color: var(--color-fondo);
+}
+
+/* Títulos y párrafos: el espacio entre bloques lo controla cada contenedor */
+h1,
+h2 {
+  margin: 0 0 var(--espacio-md);
+  line-height: 1.2;
+}
+
+h1 {
+  font-size: 1.75rem;
+}
+
+h2 {
+  font-size: 1.25rem;
+}
+
+p {
   margin: 0;
 }
 
-/* Une los bordes de las celdas para que se vea una sola línea entre ellas */
-table {
-  border-collapse: collapse;
+/* Tarjeta: caja blanca que agrupa cada sección de la página */
+.tarjeta {
+  padding: var(--espacio-lg);
+  background-color: var(--color-superficie);
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio);
+  box-shadow: var(--sombra);
 }
 
-/* Le pone borde gris y un poco de espacio interno a cada celda de la tabla */
+/* Mensaje que se muestra cuando una lista está vacía */
+.mensaje-vacio {
+  text-align: center;
+  color: var(--color-texto-suave);
+}
+
+/* Botones: estilo base (neutro) usado por Editar, Cancelar y Volver */
+button {
+  padding: var(--espacio-sm) var(--espacio-md);
+  font-family: inherit;
+  font-size: 0.9rem;
+  color: var(--color-texto);
+  background-color: var(--color-superficie);
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio);
+  cursor: pointer;
+  transition: background-color 0.15s, color 0.15s;
+}
+
+button:hover {
+  background-color: var(--color-resaltado);
+}
+
+/* Botón principal: la acción más importante de cada sección (Agregar, Guardar) */
+.boton-primario {
+  color: #ffffff;
+  background-color: var(--color-primario);
+  border-color: var(--color-primario);
+}
+
+.boton-primario:hover {
+  background-color: var(--color-primario-hover);
+}
+
+/* Botón de peligro: acciones que borran datos */
+.boton-peligro {
+  color: var(--color-peligro);
+  border-color: var(--color-peligro);
+}
+
+.boton-peligro:hover {
+  color: #ffffff;
+  background-color: var(--color-peligro);
+}
+
+/* Contorno visible al navegar con el teclado */
+button:focus-visible,
+input:focus-visible {
+  outline: 2px solid var(--color-primario);
+  outline-offset: 2px;
+}
+
+/* Formularios: campos en cuadrícula; cada formulario define cuántas columnas usa */
+.formulario {
+  display: grid;
+  gap: var(--espacio-md);
+}
+
+/* Título y botones del formulario ocupan todo el ancho */
+.formulario h2,
+.formulario-acciones {
+  grid-column: 1 / -1;
+}
+
+.formulario h2 {
+  margin: 0;
+}
+
+.formulario-acciones {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--espacio-sm);
+}
+
+/* Campos: el texto de la etiqueta arriba y el input debajo */
+label {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-xs);
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--color-texto-suave);
+}
+
+input {
+  padding: var(--espacio-sm);
+  font-family: inherit;
+  font-size: 1rem;
+  font-weight: 400;
+  color: var(--color-texto);
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio);
+}
+
+/* Tablas: ocupan todo el ancho y hacen scroll horizontal en pantallas pequeñas */
+.tabla-contenedor {
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+}
+
 th,
 td {
-  border: 1px solid #ccc;
-  padding: 4px 8px;
+  padding: var(--espacio-sm) var(--espacio-md);
+  text-align: left;
+  border-bottom: 1px solid var(--color-borde);
+}
+
+th {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--color-texto-suave);
+  background-color: var(--color-resaltado);
+}
+
+tbody tr:hover {
+  background-color: var(--color-resaltado);
+}
+
+/* Columna de botones de cada fila: alineada a la derecha y sin saltos de línea */
+.celda-acciones {
+  text-align: right;
+  white-space: nowrap;
+}
+
+.celda-acciones button {
+  margin-left: var(--espacio-sm);
+  padding: var(--espacio-xs) var(--espacio-sm);
+  font-size: 0.85rem;
 }

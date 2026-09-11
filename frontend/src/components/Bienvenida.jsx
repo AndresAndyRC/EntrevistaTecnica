@@ -1,16 +1,23 @@
-// Componente que solo muestra un mensaje de bienvenida (no recibe datos)
+import './Bienvenida.css'
+
+// El logo va en frontend/public/logo.png; Vite sirve esa carpeta en la raíz, por eso la ruta es /logo.png
 function Bienvenida() {
-  // Lo que se va a dibujar en pantalla
   return (
-    // Un contenedor que agrupa el título y el texto
-    <div>
-      {/* Título principal */}
-      <h1>Bienvenido</h1>
-      {/* Texto que explica qué hacer */}
-      <p>Da clic en "Ver más" en una empresa para ver su información y sus empleados.</p>
-    </div>
+    <section className="tarjeta bienvenida">
+      <img className="bienvenida-logo" src="/logo.png" alt="Logo del proyecto" />
+      <div>
+        <h1>Gestión de Empresas y Empleados</h1>
+        <p className="bienvenida-descripcion">
+          Administra en un solo lugar las empresas registradas y el personal de cada una.
+        </p>
+        <ul className="bienvenida-lista">
+          <li>Registra empresas con su NIT y nombre; el código se asigna automáticamente.</li>
+          <li>Da clic en <strong>Ver más</strong> para consultar una empresa y gestionar sus empleados.</li>
+          <li>Al eliminar una empresa también se eliminan todos sus empleados.</li>
+        </ul>
+      </div>
+    </section>
   )
 }
 
-// Exportamos el componente para que otras partes lo puedan usar
 export default Bienvenida
