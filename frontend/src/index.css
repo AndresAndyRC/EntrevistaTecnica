@@ -165,7 +165,7 @@ input {
   border-radius: var(--radio);
 }
 
-/* Tablas: ocupan todo el ancho y hacen scroll horizontal en pantallas pequeñas */
+/* Tablas: ocupan todo el ancho; las celdas no se parten y en pantallas pequeñas la tabla hace scroll */
 .tabla-contenedor {
   overflow-x: auto;
 }
@@ -180,6 +180,7 @@ th,
 td {
   padding: var(--espacio-sm) var(--espacio-md);
   text-align: left;
+  white-space: nowrap;
   border-bottom: 1px solid var(--color-borde);
 }
 
@@ -195,10 +196,9 @@ tbody tr:hover {
   background-color: var(--color-resaltado);
 }
 
-/* Columna de botones de cada fila: alineada a la derecha y sin saltos de línea */
+/* Columna de botones de cada fila: alineada a la derecha */
 .celda-acciones {
   text-align: right;
-  white-space: nowrap;
 }
 
 .celda-acciones button {
