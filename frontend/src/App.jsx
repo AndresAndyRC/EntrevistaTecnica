@@ -7,6 +7,26 @@ import './App.css'
 // En local: http://localhost:8000 (ver .env.example)
 const API = import.meta.env.VITE_API_URL
 
+// Mensaje en español para cada campo que valida el backend
+const MENSAJES_CAMPOS = {
+  nit: 'El NIT solo puede tener números y guiones (máximo 20).',
+  cedula: 'La cédula solo puede tener números (máximo 20).',
+  nombre: 'El nombre no puede estar vacío (máximo 100 caracteres).',
+  salario: 'El salario debe estar entre 0 y 9.999.999.999,99.',
+  codigo_empresa: 'La empresa no es válida.',
+}
+
+// FastAPI devuelve "detail" como texto (409, 404) o como lista de errores (422)
+function mensajeDeError(datos) {
+  if (Array.isArray(datos.detail)) {
+    // Cada error trae en "loc" la ruta del campo, p. ej. ["body", "nit"]; el último es el campo
+    return datos.detail
+      .map((error) => MENSAJES_CAMPOS[error.loc.at(-1)] ?? error.msg)
+      .join('\n')
+  }
+  return datos.detail
+}
+
 // Guarda el estado de la aplicación y decide qué vista mostrar
 function App() {
   const [empresas, setEmpresas] = useState([])
@@ -47,7 +67,7 @@ function App() {
     })
     const datos = await respuesta.json()
     if (!respuesta.ok) {
-      window.alert(datos.detail)
+      window.alert(mensajeDeError(datos))
       return false
     }
     // Se usa la respuesta de la API porque trae el código generado
@@ -63,7 +83,7 @@ function App() {
     })
     const datos = await respuesta.json()
     if (!respuesta.ok) {
-      window.alert(datos.detail)
+      window.alert(mensajeDeError(datos))
       return false
     }
     setEmpresas(empresas.map((empresa) => (empresa.codigo === datos.codigo ? datos : empresa)))
@@ -76,7 +96,7 @@ function App() {
     // 204 no trae cuerpo: solo se lee el JSON si hay error
     if (!respuesta.ok) {
       const error = await respuesta.json()
-      window.alert(error.detail)
+      window.alert(mensajeDeError(error))
       return
     }
     setEmpresas(empresas.filter((empresa) => empresa.codigo !== codigo))
@@ -99,7 +119,7 @@ function App() {
     })
     const datos = await respuesta.json()
     if (!respuesta.ok) {
-      window.alert(datos.detail)
+      window.alert(mensajeDeError(datos))
       return false
     }
     // Se usa la respuesta de la API porque trae el id generado
@@ -120,7 +140,7 @@ function App() {
     })
     const datos = await respuesta.json()
     if (!respuesta.ok) {
-      window.alert(datos.detail)
+      window.alert(mensajeDeError(datos))
       return false
     }
     setEmpleados(empleados.map((empleado) => (empleado.id === datos.id ? datos : empleado)))
@@ -133,7 +153,7 @@ function App() {
     // 204 no trae cuerpo: solo se lee el JSON si hay error
     if (!respuesta.ok) {
       const error = await respuesta.json()
-      window.alert(error.detail)
+      window.alert(mensajeDeError(error))
       return
     }
     setEmpleados(empleados.filter((empleado) => empleado.id !== id))
